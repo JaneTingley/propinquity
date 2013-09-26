@@ -1,9 +1,10 @@
 package propinquity;
 
-import org.jbox2d.collision.shapes.CircleDef;
+import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.FixtureDef;
 
 import processing.core.*;
 import codeanticode.glgraphics.*;
@@ -24,7 +25,7 @@ public class Particle {
 
 	float scale;
 	Body body;
-	CircleDef shape;
+	CircleShape shape;
 	PGraphics texture;
 
 	Propinquity parent;
@@ -44,25 +45,28 @@ public class Particle {
 		texture.background(imgParticle);
 		// texture.mask(imgParticle);
 
-		shape = new CircleDef();
-		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
-		shape.density = 1.0f;
-		shape.friction = 0.01f;
-		shape.restitution = 0.3f;
+		shape = new CircleShape();
+		shape.m_radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
+		FixtureDef fd = new FixtureDef();
+		fd.shape = shape;
+
+		fd.density = 1.0f;
+		fd.friction = 0.01f;
+		fd.restitution = 0.3f;
 		if(isNew) {
-			shape.filter.categoryBits = Fences.CAT_NEW;
-			shape.filter.maskBits = Fences.MASK_NEW;
+			fd.filter.categoryBits = Fences.CAT_NEW;
+			fd.filter.maskBits = Fences.MASK_NEW;
 		} else {
-			shape.filter.categoryBits = Fences.CAT_OLD;
-			shape.filter.maskBits = Fences.MASK_OLD;
+			fd.filter.categoryBits = Fences.CAT_OLD;
+			fd.filter.maskBits = Fences.MASK_OLD;
 		}
 
 		BodyDef bd = new BodyDef();
 		bd.position.set(parent.box2d.coordPixelsToWorld(position));
 
 		body = parent.box2d.createBody(bd);
-		body.createShape(shape);
-		body.setMassFromShapes();
+		body.createFixture(fd);
+		body.resetMassData();
 	}
 
 	public float getScale() {
@@ -85,7 +89,7 @@ public class Particle {
 		return body;
 	}
 
-	public CircleDef getCircleDef() {
+	public CircleShape getCircleShape() {
 		return shape;
 	}
 

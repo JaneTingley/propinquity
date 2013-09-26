@@ -25,7 +25,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
-	static boolean useSimulator = false;
+	static boolean useSimulator = true;
 
 	//General/Util
 	HeapDebug heapDebug;
@@ -63,7 +63,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	LevelSelect levelSelect;
 
 	//Box 2D
-	public float worldSize = 2f;
 	PBox2D box2d;
 	Fences fences;
 
@@ -149,8 +148,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		playerSelect = new PlayerSelect(this, hud, players);
 		
 		//Box 2D
-		box2d = new PBox2D(this, (float) height/worldSize);
-		box2d.createWorld(-worldSize/2f, -worldSize/2f, worldSize, worldSize);
+		box2d = new PBox2D(this);
+		box2d.createWorld();
 		box2d.setGravity(0.0f, 0.0f);
 
 		fences = new Fences(this, box2d);

@@ -2,10 +2,11 @@ package propinquity;
 
 import pbox2d.*;
 
-import org.jbox2d.collision.shapes.PolygonDef;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.FixtureDef;
 
 import processing.core.PConstants;
 import processing.core.PApplet;
@@ -51,12 +52,10 @@ public class Fences {
 		BodyDef bd = new BodyDef();
 		bd.position.set(0.0f, 0.0f);
 		
-		PolygonDef sd = new PolygonDef();
-		sd.filter.categoryBits = CAT_INNER;
-		sd.filter.maskBits = MASK_INNER;
+		PolygonShape sd = new PolygonShape();
 
 		float fenceDepth = 0.05f;
-		float worldScale = parent.height/parent.worldSize;
+		float worldScale = box2d.scalarPixelsToWorld(parent.height);
 		float radius = INNER_RADIUS_MEDIUM/worldScale + fenceDepth/2 + 0.0125f;
 		float perimeter = 2 * PConstants.PI * radius;
 
@@ -66,7 +65,12 @@ public class Fences {
 			float angle = 2 * PConstants.PI/SECTIONS * i;
 			sd.setAsBox(perimeter/SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
 					* radius), angle + PConstants.PI/2);
-			innerFence.createShape(sd);
+			FixtureDef fd = new FixtureDef();
+			fd.density = 1;
+			fd.filter.categoryBits = CAT_INNER;
+			fd.filter.maskBits = MASK_INNER;
+			fd.shape = sd;
+			innerFence.createFixture(fd);
 		}
 	}
 	
@@ -74,12 +78,10 @@ public class Fences {
 		BodyDef bd = new BodyDef();
 		bd.position.set(0.0f, 0.0f);
 
-		PolygonDef sd = new PolygonDef();
-		sd.filter.categoryBits = CAT_OUTER;
-		sd.filter.maskBits = MASK_OUTER;
+		PolygonShape sd = new PolygonShape();
 
 		float fenceDepth = 0.05f;
-		float worldScale = parent.height/parent.worldSize;
+		float worldScale = box2d.scalarPixelsToWorld(parent.height);
 		float radius = OUTER_RADIUS/worldScale + fenceDepth/2;
 		float perimeter = 2 * PConstants.PI * radius;
 
@@ -89,7 +91,12 @@ public class Fences {
 			float angle = 2 * PConstants.PI/SECTIONS * i;
 			sd.setAsBox(perimeter/SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
 					* radius), angle + PConstants.PI/2);
-			outerFence.createShape(sd);
+			FixtureDef fd = new FixtureDef();
+			fd.density = 1;
+			fd.filter.categoryBits = CAT_INNER;
+			fd.filter.maskBits = MASK_INNER;
+			fd.shape = sd;
+			outerFence.createFixture(fd);
 		}
 	}
 
